@@ -27,6 +27,27 @@ class QuizSquare{
         this.h = h;
     }
 
+    rotate(){
+        stroke(200,200,200);
+        fill(0,0,0);
+        translate(this.x,this.y);
+        if(mouseIsPressed){
+            rotate(millis()*20);
+            if(this.w>0 && this.h>0){
+                this.w -= 2;
+                this.h -= 2;
+            }else{
+                this.w = 0;
+                this.h = 0;      
+            }
+        }else{
+            rotate(millis()*6 / 360);
+        }
+        rect(this.w/2*-1,this.h/2*-1,this.w,this.h);
+    
+        ellipse(0,0,this.w,this.h);
+    }
+
     get x(){return this._x;}
     get y(){return this._y;}
     get w(){return this._w;}
@@ -58,7 +79,7 @@ function draw() {
     resetCanvas();
     questionText();
     push();
-        rotateSquare();
+        quizSquare.rotate();
     pop();
         randomLineColor();
         computePointerSpeed();
@@ -113,30 +134,6 @@ function questionText(){
 
     rect(50,100,20,32);
     text('木は木でも登れない木はなーんだ？',100,100);
-}
-
-
-function rotateSquare(){
-
-    stroke(200,200,200);
-    fill(0,0,0);
-    translate(quizSquare.x,quizSquare.y);
-    if(mouseIsPressed){
-        rotate(millis()*20);
-        if(quizSquare.w>0 && quizSquare.h>0){
-            quizSquare.w -= 2;
-            quizSquare.h -= 2;
-        }else{
-            quizSquare.w = 0;
-            quizSquare.h = 0;      
-        }
-    }else{
-        rotate(millis()*3 / 360);
-    }
-    rect(quizSquare.w/2*-1,quizSquare.h/2*-1,quizSquare.w,quizSquare.h);
-
-    ellipse(0,0,quizSquare.w,quizSquare.h);
-
 }
 
 
