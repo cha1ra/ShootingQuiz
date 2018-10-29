@@ -9,6 +9,14 @@ var pointerSpeed = {x:0,y:0};
 var pointerSpeedFlag = {up:false,down:false,left:false,right:false};
 var quizSquare;
 
+var chargeMeter = -90;
+var chargeEnergyFlag = false;
+
+var fireFlowerFlag = false;
+var currentFireFlowerTime = 0;
+var maxFireFlowerTime = 120;
+var firePosX, firePosY;
+
 class QuizSquare{
     constructor(x,y,w,h){
         this.x = x;
@@ -33,6 +41,7 @@ class QuizSquare{
 
 function setup() {
     createCanvas(640,480);
+    angleMode(DEGREES);
     smooth();
     frameRate(60);
     for(let i=0; i<pointerArrayLength; i++){
@@ -51,12 +60,16 @@ function draw() {
     pop();
         randomLineColor();
         computePointerSpeed();
+        chargeEnergy();
+    push();
+        fireFlower();
+    pop();
         drawMousePoint();
 }
 
 
 function resetCanvas(){
-    fill(255);
+    fill(0);
     rect(0,0,width,height);
 }
 
@@ -142,8 +155,8 @@ function keyPressed(){
         case RIGHT_ARROW:
             pointerSpeedFlag.right = true;
             break;
-        case 32:
-            console.log('space');
+        case 32://SPACE
+            chargeEnergyFlag = true;
             break; 
         default:
     }
@@ -163,6 +176,10 @@ function keyReleased(){
         case RIGHT_ARROW:
             pointerSpeedFlag.right = false;
             break;
+        case 32://SPACE
+            chargeEnergyFlag = false;
+            fireFlowerFlag = true;
+            break; 
         default:
     }
 }
@@ -170,7 +187,7 @@ function keyReleased(){
 
 function computePointerSpeed(){
     let maxSpeed = 7;
-    let accr = 0.3;
+    let accr = 0.5;
     let grav = 0.3;
 
     //キー入力があったら加速する
@@ -190,22 +207,83 @@ function computePointerSpeed(){
     }
 
     //抵抗を加算
-    if(pointerSpeed.x<grav){
-        pointerSpeed.x += grav;
-    }else if(pointerSpeed.x>grav){
-        pointerSpeed.x -= grav;
-    }else{
-        pointerSpeed.x = 0;
+    if(pointerSpeed.x!=0){
+        if(pointerSpeed.x<0){
+            pointerSpeed.x += grav;
+        }else{
+            pointerSpeed.x -= grav;
+        }
     }
-    if(pointerSpeed.y<grav){
-        pointerSpeed.y += grav;
-    }else if(pointerSpeed.y>grav){
-        pointerSpeed.y -= grav;
-    }else{
-        pointerSpeed.y = 0;
+    if(pointerSpeed.y!=0){
+        if(pointerSpeed.y<0){
+            pointerSpeed.y += grav;
+        }else{
+            pointerSpeed.y -= grav;
+        }
     }
+
+    if(!keyIsPressed){
+        //スピードが抵抗以下なら止める
+        if(grav*-1<pointerSpeed.x&&pointerSpeed.x<grav)pointerSpeed.x = 0;
+        if(grav*-1<pointerSpeed.y&&pointerSpeed.y<grav)pointerSpeed.y = 0;
+    }
+    $('#log').text(pointerSpeed.x);
+
 }
 
 function fireFlower(){
+    if(fireFlowerFlag){
+        let flowerNum = 16;
+        let easing = 0.08;
 
+        if(currentFireFlowerTime==0)setInitPosition();
+        translate(firePosX,firePosY);
+
+        currentFireFlowerTime += (maxFireFlowerTime - currentFireFlowerTime)*easing;
+
+        if(currentFireFlowerTime < maxFireFlowerTime){
+            for(let i=0; i<flowerNum; i++){
+                rotate(360/flowerNum*i);
+                rect (currentFireFlowerTime,currentFireFlowerTime,2,10);
+            }
+        }else{
+            fadeOut();
+        }
+        currentFireFlowerTime++;
+
+        function setInitPosition(){
+            firePosX = pointerArrayX[0];
+            firePosY = pointerArrayY[0];
+        }
+
+
+
+
+        function fadeOut(){
+
+            currentFireFlowerTime = 0;
+            fireFlowerFlag =false;
+        }
+    }
+}
+
+function chargeEnergy(){
+
+    let chargeSpeed = 10;
+    effect();
+
+    function effect(){
+        if(chargeEnergyFlag){
+            chargeMeter += chargeSpeed;
+            noFill();
+            if(chargeMeter < 270){
+                arc(pointerArrayX[0], pointerArrayY[0], 50, 50, -90, chargeMeter);
+            }else{
+                arc(pointerArrayX[0], pointerArrayY[0], 50, 50, 0, 359);
+            }
+    
+        }else{
+            chargeMeter = -90;
+        }
+    }
 }
