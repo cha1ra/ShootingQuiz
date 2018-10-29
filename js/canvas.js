@@ -63,7 +63,6 @@ function draw() {
         randomLineColor();
         computePointerSpeed();
         chargeEnergy();
-        isShootHit();
     push();
         fireFlower();
     pop();
@@ -180,6 +179,7 @@ function keyReleased(){
         case 32://SPACE
             chargeEnergyFlag = false;
             fireFlowerFlag = true;
+            isShootHit();
             break; 
         default:
     }
@@ -257,7 +257,6 @@ function fireFlower(){
     }
 
     function fadeOut(destination){
-        console.log(fireFadeOutCount);
         if(fireFadeOutCount<255){
             stroke(255-fireFadeOutCount);
             fireFadeOutCount+=10;
@@ -275,10 +274,10 @@ function fireFlower(){
     }
     
     function draw(destination){
+        noFill();  
         rotate(destination*10);
-        ellipse(0,0,5,5);
         ellipse(0,0,currentFireFlowerTime,currentFireFlowerTime);
-        ellipse(0,0,currentFireFlowerTime*1.5,currentFireFlowerTime*1.5);
+        ellipse(0,0,5,5);
         for(let i=0; i<flowerNum; i++){
             rotate(360/flowerNum*i);
             rect (currentFireFlowerTime,currentFireFlowerTime,2,15);
@@ -309,5 +308,9 @@ function chargeEnergy(){
 
 //当たり判定
 function isShootHit(){
-    if(quizSquare.x){}
+    if(pow(pointerArrayX[0]-quizSquare.x,2)+pow(pointerArrayY[0]-quizSquare.y,2)<pow(quizSquare.w/2,2)){
+        console.log('hit!');
+    }else{
+        console.log('out!');
+    }
 }
