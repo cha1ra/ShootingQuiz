@@ -14,9 +14,10 @@ var chargeEnergyFlag = false;
 
 var fireFlowerFlag = false;
 var currentFireFlowerTime = 0;
-var maxFireFlowerTime = 90;
+var maxFireFlowerTime = 40;
 var firePosX, firePosY;
 var fireFlowerLevel = 0;
+var fireFadeOutCount = 0;
 
 class QuizSquare{
     constructor(x,y,w,h){
@@ -62,6 +63,7 @@ function draw() {
         randomLineColor();
         computePointerSpeed();
         chargeEnergy();
+        isShootHit();
     push();
         fireFlower();
     pop();
@@ -231,26 +233,21 @@ function computePointerSpeed(){
 }
 
 function fireFlower(){
+    const flowerNum = 16;
+    const easing = 0.08;
     if(fireFlowerFlag){
-        let flowerNum = 16;
-        let easing = 0.08;
-
         if(currentFireFlowerTime==0)setInitPosition();
 
         translate(firePosX,firePosY);
 
         let destination = (maxFireFlowerTime - currentFireFlowerTime)*easing;
-
         currentFireFlowerTime += destination + 0.1;
 
         if(currentFireFlowerTime < maxFireFlowerTime){
-            rotate(destination*10);
-            for(let i=0; i<flowerNum; i++){
-                rotate(360/flowerNum*i);
-                rect (currentFireFlowerTime,currentFireFlowerTime,2,15);
-            }
+            draw(destination);
         }else{
-            fadeOut();
+            fadeOut(destination);
+            
         }
     }
 
@@ -259,10 +256,33 @@ function fireFlower(){
         firePosY = pointerArrayY[0];
     }
 
-    function fadeOut(){
+    function fadeOut(destination){
+        console.log(fireFadeOutCount);
+        if(fireFadeOutCount<255){
+            stroke(255-fireFadeOutCount);
+            fireFadeOutCount+=10;
+            draw(destination);
+        }else{
+            reset();
+        }
+    }
+
+    function reset(){
         currentFireFlowerTime = 0;
         destination = 0;
+        fireFadeOutCount = 0;
         fireFlowerFlag =false;
+    }
+    
+    function draw(destination){
+        rotate(destination*10);
+        ellipse(0,0,5,5);
+        ellipse(0,0,currentFireFlowerTime,currentFireFlowerTime);
+        ellipse(0,0,currentFireFlowerTime*1.5,currentFireFlowerTime*1.5);
+        for(let i=0; i<flowerNum; i++){
+            rotate(360/flowerNum*i);
+            rect (currentFireFlowerTime,currentFireFlowerTime,2,15);
+        }
     }
 }
 
@@ -285,4 +305,9 @@ function chargeEnergy(){
             chargeMeter = -90;
         }
     }
+}
+
+//当たり判定
+function isShootHit(){
+    if(quizSquare.x){}
 }
