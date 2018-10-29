@@ -1,8 +1,12 @@
-var mouseArrayX = [];
-var mouseArrayY = [];
-const mouseArrayLength = 30;
-const mousePointSize = 10;
-var mousePointColor = [Math.random()*255,Math.random()*255,Math.random()*255];
+
+
+var pointerArrayX = [];
+var pointerArrayY = [];
+const pointerArrayLength = 20;
+const pointerPointSize = 10;
+var pointerColor = [Math.random()*255,Math.random()*255,Math.random()*255];
+var pointerSpeed = {x:0,y:0};
+var pointerSpeedFlag = {up:false,down:false,left:false,right:false};
 var quizSquare;
 
 class QuizSquare{
@@ -31,9 +35,9 @@ function setup() {
     createCanvas(640,480);
     smooth();
     frameRate(60);
-    for(let i=0; i<mouseArrayLength; i++){
-        mouseArrayX[i] = mouseX;
-        mouseArrayY[i] = mouseY;
+    for(let i=0; i<pointerArrayLength; i++){
+        pointerArrayX[i] = width/2;
+        pointerArrayY[i] = height/2;
     }
     quizSquare = new QuizSquare(200,200,50,50);
 
@@ -46,6 +50,7 @@ function draw() {
         rotateSquare();
     pop();
         randomLineColor();
+        computePointerSpeed();
         drawMousePoint();
 }
 
@@ -58,18 +63,18 @@ function resetCanvas(){
 function drawMousePoint(){
 
     //配列の定義
-    for(let i = mouseArrayLength-1; i >= 1; i--){
-        mouseArrayX[i] = mouseArrayX[i-1];
-        mouseArrayY[i] = mouseArrayY[i-1];
+    for(let i = pointerArrayLength-1; i >= 1; i--){
+        pointerArrayX[i] = pointerArrayX[i-1];
+        pointerArrayY[i] = pointerArrayY[i-1];
     }
-    mouseArrayX[0] = mouseX;
-    mouseArrayY[0] = mouseY;
+    pointerArrayX[0] += pointerSpeed.x;
+    pointerArrayY[0] += pointerSpeed.y;
 
     //配列間の線描画
-    for(let i=0; i< mouseArrayLength-1; i++){
-        const size = mousePointSize-(mousePointSize/mouseArrayLength*i);
+    for(let i=0; i< pointerArrayLength-1; i++){
+        const size = pointerPointSize-(pointerPointSize/pointerArrayLength*i);
         strokeWeight(size);
-        line(mouseArrayX[i],mouseArrayY[i],mouseArrayX[i+1],mouseArrayY[i+1]);
+        line(pointerArrayX[i],pointerArrayY[i],pointerArrayX[i+1],pointerArrayY[i+1]);
     }
 }
 
@@ -77,22 +82,22 @@ function randomLineColor(){
     let randomMax = 10;
     for(let i=0; i<3; i++){
         let randomValue = Math.random()*randomMax;
-        let changeValue = mousePointColor[i] + randomValue-(randomMax/2);
+        let changeValue = pointerColor[i] + randomValue-(randomMax/2);
         if(changeValue>=0 && changeValue<=255){
-            mousePointColor[i] = changeValue;
+            pointerColor[i] = changeValue;
         }
     }
-    stroke(mousePointColor[0],mousePointColor[1],mousePointColor[2]);
+    stroke(pointerColor[0],pointerColor[1],pointerColor[2]);
 }
 
 function questionText(){
-    textSize(32);
+    textSize(24);
     fill(0);
 
 
 
     rect(50,100,20,32);
-    text('wprd',100,100);
+    text('木は木でも登れない木はなーんだ？',100,100);
 }
 
 
@@ -122,13 +127,85 @@ function rotateSquare(){
 }
 
 
-function playerController(){
-    if(keyIsPressed){
-        switch(keyCode){
-            case ArrowRight:
-                quizSquare.x += 1;
-                break;
-            default:
+function keyPressed(){
+    let speed = 10;
+    switch(keyCode){
+        case UP_ARROW:
+            pointerSpeedFlag.up = true;
+            break;
+        case DOWN_ARROW:
+            pointerSpeedFlag.down = true;
+            break;
+        case LEFT_ARROW:
+            pointerSpeedFlag.left = true;
+            break;
+        case RIGHT_ARROW:
+            pointerSpeedFlag.right = true;
+            break;
+        case 32:
+            console.log('space');
+            break; 
+        default:
+    }
+}
+
+function keyReleased(){
+    switch(keyCode){
+        case UP_ARROW:
+            pointerSpeedFlag.up = false;
+            break;
+        case DOWN_ARROW:
+            pointerSpeedFlag.down = false;
+            break;
+        case LEFT_ARROW:
+            pointerSpeedFlag.left = false;
+            break;
+        case RIGHT_ARROW:
+            pointerSpeedFlag.right = false;
+            break;
+        default:
+    }
+}
+
+
+function computePointerSpeed(){
+    let maxSpeed = 7;
+    let accr = 0.3;
+    let grav = 0.3;
+
+    //キー入力があったら加速する
+    if(Math.abs(pointerSpeed.y)<maxSpeed){
+        if(pointerSpeedFlag.up){
+            pointerSpeed.y -= accr;
+        }else if(pointerSpeedFlag.down){
+            pointerSpeed.y += accr;
         }
     }
+    if(Math.abs(pointerSpeed.x)<maxSpeed){
+        if(pointerSpeedFlag.left){
+            pointerSpeed.x -= accr;
+        }else if(pointerSpeedFlag.right){
+            pointerSpeed.x += accr;
+        }
+    }
+
+    //抵抗を加算
+    if(pointerSpeed.x<grav){
+        pointerSpeed.x += grav;
+    }else if(pointerSpeed.x>grav){
+        pointerSpeed.x -= grav;
+    }else{
+        pointerSpeed.x = 0;
+    }
+    if(pointerSpeed.y<grav){
+        pointerSpeed.y += grav;
+    }else if(pointerSpeed.y>grav){
+        pointerSpeed.y -= grav;
+    }else{
+        pointerSpeed.y = 0;
+    }
+}
+
+function fireFlower(){
+
 }
