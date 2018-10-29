@@ -14,8 +14,9 @@ var chargeEnergyFlag = false;
 
 var fireFlowerFlag = false;
 var currentFireFlowerTime = 0;
-var maxFireFlowerTime = 120;
+var maxFireFlowerTime = 90;
 var firePosX, firePosY;
+var fireFlowerLevel = 0;
 
 class QuizSquare{
     constructor(x,y,w,h){
@@ -40,7 +41,7 @@ class QuizSquare{
 
 
 function setup() {
-    createCanvas(640,480);
+    createCanvas(960,480);
     angleMode(DEGREES);
     smooth();
     frameRate(60);
@@ -116,26 +117,24 @@ function questionText(){
 
 function rotateSquare(){
 
-    // stroke(200,200,200);
-    // fill(255,255,255);
-    // translate(100,100);
-    // rotate(millis()*3 / 360);
-    // rect(-25,-25,50,50);
-
     stroke(200,200,200);
-    fill(255,255,255);
+    fill(0,0,0);
     translate(quizSquare.x,quizSquare.y);
     if(mouseIsPressed){
-        rotate(millis()*6 / 360);
+        rotate(millis()*20);
         if(quizSquare.w>0 && quizSquare.h>0){
             quizSquare.w -= 2;
             quizSquare.h -= 2;
+        }else{
+            quizSquare.w = 0;
+            quizSquare.h = 0;      
         }
     }else{
         rotate(millis()*3 / 360);
     }
-
     rect(quizSquare.w/2*-1,quizSquare.h/2*-1,quizSquare.w,quizSquare.h);
+
+    ellipse(0,0,quizSquare.w,quizSquare.h);
 
 }
 
@@ -237,33 +236,33 @@ function fireFlower(){
         let easing = 0.08;
 
         if(currentFireFlowerTime==0)setInitPosition();
+
         translate(firePosX,firePosY);
 
-        currentFireFlowerTime += (maxFireFlowerTime - currentFireFlowerTime)*easing;
+        let destination = (maxFireFlowerTime - currentFireFlowerTime)*easing;
+
+        currentFireFlowerTime += destination + 0.1;
 
         if(currentFireFlowerTime < maxFireFlowerTime){
+            rotate(destination*10);
             for(let i=0; i<flowerNum; i++){
                 rotate(360/flowerNum*i);
-                rect (currentFireFlowerTime,currentFireFlowerTime,2,10);
+                rect (currentFireFlowerTime,currentFireFlowerTime,2,15);
             }
         }else{
             fadeOut();
         }
-        currentFireFlowerTime++;
+    }
 
-        function setInitPosition(){
-            firePosX = pointerArrayX[0];
-            firePosY = pointerArrayY[0];
-        }
+    function setInitPosition(){
+        firePosX = pointerArrayX[0];
+        firePosY = pointerArrayY[0];
+    }
 
-
-
-
-        function fadeOut(){
-
-            currentFireFlowerTime = 0;
-            fireFlowerFlag =false;
-        }
+    function fadeOut(){
+        currentFireFlowerTime = 0;
+        destination = 0;
+        fireFlowerFlag =false;
     }
 }
 
