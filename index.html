@@ -6,29 +6,41 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="./js/jquery-3.3.1.min.js"></script>
     <script src="./js/p5.min.js"></script>
-    <title>Quiz</title>
+    <script src="./js/p5.sound.min.js"></script>
+    <link href="https://fonts.googleapis.com/earlyaccess/sawarabimincho.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./css/style.min.css">
+    <title>Shooting Quiz</title>
 </head>
 <body>
-   
-    <div class="quiz-card">
-        <h2 id="quiz-num">Quiz</h2>
-        <p id="question">Question</p>
-        <ul>
-            <li name='choice' id="ans0" value="0">Selection1</li>
-            <li name='choice' id="ans1" value="1">Selection2</li>
-            <li name='choice' id="ans2" value="2">Selection3</li>
-        </ul>
-        <p id="result">Answer is...</p>
-        <button id="start">Start</button>
+
+    <div id="title">
+        <div class="content">
+            <h1>Shooting Quiz</h1>
+            <div id="start" class ="btn">Start</div>
+        </div>
     </div>
-    
-    <div id="log">Log Here...</div>
+
+    <div id="canvas" class="hidden"></div>
+
+    <div id="result" class='hidden'>
+        <div class="content">
+            <h1>Result</h1>
+            <div class="detail">
+                <div class="row">
+                    <div>正答数</div>
+                    <div class="correct-number">1</div>
+                </div>
+            </div>
+            <a href="./"><div id="restart" class ="btn">Back To Top</div></a>
+        </div>
+    </div>
+
+
 
 
     
     
-    <script src="./js/class.js"></script>
+    <!-- <script src="./js/quiz.js"></script> -->
     <script src="./js/canvas.js"></script>
-    <script src="./js/quiz.js"></script>
 </body>
 </html>
