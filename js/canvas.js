@@ -138,11 +138,13 @@ class PlayerResult{
 
 class QuizSquare{
 
-    constructor(x,y,w,h,maxLifePoint,selection){
+    constructor(x,y,w,h,speedX,speedY,maxLifePoint,selection){
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
+        this.speedX = speedX;
+        this.speedY = speedY;
         this.maxLifePoint = maxLifePoint;
         this.selection = selection;
         this.currentLifePoint = maxLifePoint;
@@ -154,9 +156,6 @@ class QuizSquare{
         this.minW = w*0.5;
         this.minH = h*0.5;
 
-        this.speedX = 5;
-        this.speedY = 5;
-
         this.grav = 0.02;
     }
 
@@ -165,6 +164,7 @@ class QuizSquare{
         this.rotateSquare();
         pop();
         this.text(this.selection);
+        this.computeSpeed();
     }
 
     text(sel){
@@ -180,13 +180,14 @@ class QuizSquare{
         if(!this.isSelected()){
             stroke(200,200,200);
             fill(0,0,0);
-            translate(this.x,this.y);
+            translate(this.x+=this.speedX,this.y+=this.speedY);
             this.drawLifePointBar();
 
             if(this.nextW<this.w || this.nextH<this.h){
                 rotate(millis()*this.rotateSpeed*1.2);
                 this.w -= 0.5;
                 this.h -= 0.5;
+                fill(200,50,50);
             }else{
                 rotate(millis()*this.rotateSpeed / 180);
             }
@@ -195,6 +196,12 @@ class QuizSquare{
             rect(randomW/2*-1,randomH/2*-1,randomW,randomH);
             ellipse(0,0,this.w,this.h);
         }
+    }
+
+    computeSpeed(){
+        //壁のぶつかり判定
+        if(this.x-this.w/2 < 0 || this.x+this.w/2 > width)this.speedX *= -1;
+        if(this.y-this.h/2 < titleDivH || this.y+this.h/2 > height)this.speedY *= -1;
     }
 
     drawLifePointBar(){
@@ -261,7 +268,9 @@ function setup() {
         pointerArrayY[i] = height/2;
     }
     for (let i=0;i<selectionLength;i++){
-        quizSquare[i] = new QuizSquare(width*(i+1)/4,titleDivH+(fieldDivH/2),70,70,5,selection[i]);
+        let speedX = (Math.random()*8)-4;
+        let speedY= (Math.random()*8)-4;
+        quizSquare[i] = new QuizSquare(width*(i+1)/4,titleDivH+(fieldDivH/2),70,70,speedX,speedY,5,selection[i]);
     }
 
 }
